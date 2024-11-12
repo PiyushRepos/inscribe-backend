@@ -1,0 +1,24 @@
+{
+  "name": "inscribe-backend",
+  "version": "1.0.0",
+  "description": "Inscribe is a dynamic platform for sharing your thoughts, stories, and ideas. Write, connect, and leave your mark with every post.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiyushRepos/inscribe-backend.git"
+  },
+  "author": "Piyush Kumar !!",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PiyushRepos/inscribe-backend/issues"
+  },
+  "homepage": "https://github.com/PiyushRepos/inscribe-backend#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "prettier": "^3.3.3"
+  }
+}
