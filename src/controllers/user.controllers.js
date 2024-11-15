@@ -6,39 +6,67 @@ import { validateUserSchema } from "../utils/validateSchema.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 
 const registerUser = asyncHandler(async (req, res) => {
+  // Validate the user input
   const result = validateUserSchema.validate(req.body);
-  if (result.error)
-    throw new ApiError(400, "user validation failed", result.error?.details);
-  const { username, email, firstName, bio } = req.body;
+  if (result.error) {
+    const errors = result.error.details.map((err) =>
+      err.message.replaceAll(`\"`, "")
+    );
+    throw new ApiError(400, "User validation failed", errors);
+  }
 
-  const user = await User.findOne({ $or: [{ username }, { email }] });
-  if (user) throw new ApiError(409, "user already exists");
+  const { username, email, firstName, bio, lastName } = req.body;
 
+  // Check for duplicate username or email
+  const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+  if (existingUser) throw new ApiError(409, "User already exists");
+
+  // Handle profile image upload
   const profileImageLocalPath = req.file?.path;
+  let profileImageUrl = null;
+  if (profileImageLocalPath) {
+    try {
+      const response = await uploadOnCloudinary(profileImageLocalPath);
+      profileImageUrl = response.url;
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload profile image");
+    }
+  }
 
-  let response = profileImageLocalPath
-    ? await uploadOnCloudinary(profileImageLocalPath)
-    : null;
-
+  // Generating a unique username
+  let uniqueUsername = username || firstName;
   let nanoid = "";
   for (let i = 1; i <= 4; i++) {
     nanoid += Math.floor(Math.random() * 10);
   }
+  uniqueUsername += nanoid;
 
-  const newUser = await new User({
+  // Ensuring that username is unique
+  while (await User.findOne({ username: uniqueUsername })) {
+    nanoid = "";
+    for (let i = 1; i <= 4; i++) {
+      nanoid += Math.floor(Math.random() * 10);
+    }
+    uniqueUsername = (username || firstName) + nanoid;
+  }
+
+  // Create a new user
+  const newUser = new User({
     ...req.body,
-    username: username || firstName + nanoid,
+    username: uniqueUsername,
+    fullName: lastName ? `${firstName} ${lastName}` : firstName,
     bio: bio || null,
-    profileImage: response?.url || undefined,
-    role: "user",
+    profileImage: profileImageUrl,
+    role: "user", // Prevent role escalation
   });
 
-  const registerUser = await newUser.save();
-  const userResponse = registerUser.toObject();
+  const savedUser = await newUser.save();
+  const userResponse = savedUser.toObject();
   delete userResponse.password;
 
-  return res.status(200).json(
-    new ApiResponse(200, "user registered successfully.", {
+  // Sending response
+  return res.status(201).json(
+    new ApiResponse(201, "User registered successfully.", {
       user: userResponse,
     })
   );
