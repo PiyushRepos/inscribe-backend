@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
-      required: [true, "last name is required"],
+    },
+    fullName: {
+      type: String,
     },
     email: {
       type: String,
@@ -34,6 +36,7 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
+      default: null,
     },
     profileImage: {
       type: String,
@@ -43,7 +46,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
-      required: true,
     },
     posts: [
       {

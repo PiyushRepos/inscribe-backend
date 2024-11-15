@@ -1,9 +1,8 @@
 import { Router } from "express";
 const router = Router();
 import { registerUser } from "../controllers/user.controllers.js";
-import { checkSchema, body } from "express-validator";
-import { validateUserSchema } from "../utils/validateSchema.js";
+import upload from "../middlewares/multer.middlewares.js";
 
-router.route("/register").post(checkSchema(validateUserSchema), registerUser);
+router.route("/register").post(upload.single("profileImage"), registerUser);
 
 export default router;
