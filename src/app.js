@@ -19,7 +19,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // routes
-app.use("/api/users", userRouter);
+app.use("/api/auth", userRouter);
 
 // global error handler
 app.use((err, _, res, __) => {
