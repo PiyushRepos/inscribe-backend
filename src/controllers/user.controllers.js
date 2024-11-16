@@ -4,6 +4,7 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { validateUserSchema } from "../utils/validateSchema.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+import generateAccessAndRefreshToken from "../utils/generateAccessAndRefreshToken.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   // Validate the user input
@@ -72,4 +73,43 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, username, password } = req.body;
+  if (!(email || username))
+    throw new ApiError(400, "username or email is required");
+
+  const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+  if (!existingUser) throw new ApiError(400, "User does not exits");
+
+  if (!password) throw new ApiError(400, "Password is required");
+
+  const isPasswordCorrect = await existingUser.comparePassword(password);
+  if (!isPasswordCorrect) throw new ApiError(400, "Inavlid password");
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    existingUser.id
+  );
+
+  const options = {
+    httpsOnly: true,
+    secure: true,
+  };
+
+  let loggedInUser = await User.findById(existingUser._id).select(
+    "-password -refreshToken -__v"
+  );
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(200, "User logged in", {
+        user: loggedInUser,
+        accessToken,
+        refreshToken,
+      })
+    );
+});
+
+export { registerUser, loginUser };

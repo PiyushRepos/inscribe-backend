@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { config } from "../config";
+import { config } from "../config.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "password is required"],
       minlength: 6,
-      select: false,
     },
     username: {
       type: String,
@@ -50,6 +49,10 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -72,7 +75,7 @@ userSchema.methods.comparePassword = async function (plainPassword) {
 };
 
 userSchema.methods.generateAccessToken = async function () {
-  await jwt.sign(
+  return await jwt.sign(
     {
       userId: this._id,
       email: this.email,
@@ -84,7 +87,7 @@ userSchema.methods.generateAccessToken = async function () {
   );
 };
 userSchema.methods.generateRefreshToken = async function () {
-  await jwt.sign(
+  return await jwt.sign(
     {
       userId: this._id,
       email: this.email,
