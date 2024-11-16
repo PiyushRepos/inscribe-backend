@@ -5,6 +5,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import { validateUserSchema } from "../utils/validateSchema.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
 import generateAccessAndRefreshToken from "../utils/generateAccessAndRefreshToken.js";
+import { config } from "../config.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   // Validate the user input
@@ -76,23 +77,25 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
   if (!(email || username))
-    throw new ApiError(400, "username or email is required");
+    throw new ApiError(400, "Username or email is required");
 
   const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-  if (!existingUser) throw new ApiError(400, "User does not exits");
+  if (!existingUser) throw new ApiError(400, "User does not exist");
 
   if (!password) throw new ApiError(400, "Password is required");
 
   const isPasswordCorrect = await existingUser.comparePassword(password);
-  if (!isPasswordCorrect) throw new ApiError(400, "Inavlid password");
+  if (!isPasswordCorrect) throw new ApiError(400, "Invalid password");
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     existingUser.id
   );
 
   const options = {
-    httpsOnly: true,
-    secure: true,
+    httpOnly: true,
+    secure: config.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   };
 
   let loggedInUser = await User.findById(existingUser._id).select(
