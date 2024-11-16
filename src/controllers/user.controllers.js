@@ -75,22 +75,28 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
+  // Validate the user input
   const { email, username, password } = req.body;
   if (!(email || username))
     throw new ApiError(400, "Username or email is required");
 
+  // Check that user already exists or not
   const existingUser = await User.findOne({ $or: [{ email }, { username }] });
   if (!existingUser) throw new ApiError(400, "User does not exist");
 
+  // Check if password is provided or not
   if (!password) throw new ApiError(400, "Password is required");
 
+  // Comparing user provided password with hashed password
   const isPasswordCorrect = await existingUser.comparePassword(password);
   if (!isPasswordCorrect) throw new ApiError(400, "Invalid password");
 
+  // Generate access and refresh token
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     existingUser.id
   );
 
+  // options for cookies
   const options = {
     httpOnly: true,
     secure: config.NODE_ENV === "production",
@@ -98,14 +104,16 @@ const loginUser = asyncHandler(async (req, res) => {
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   };
 
+  // Get updated user: refresh token updated or added
   let loggedInUser = await User.findById(existingUser._id).select(
     "-password -refreshToken -__v"
   );
 
+  // Sending response
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("refreshToken", refreshToken, { ...options, maxAge: undefined })
     .json(
       new ApiResponse(200, "User logged in", {
         user: loggedInUser,
