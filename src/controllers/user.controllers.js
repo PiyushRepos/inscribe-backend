@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Handle profile image upload
   const profileImageLocalPath = req.file?.path;
-  let profileImageUrl = null;
+  let profileImageUrl = undefined;
   if (profileImageLocalPath) {
     try {
       const response = await uploadOnCloudinary(profileImageLocalPath);
@@ -89,7 +89,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   // Comparing user provided password with hashed password
   const isPasswordCorrect = await existingUser.comparePassword(password);
-  if (!isPasswordCorrect) throw new ApiError(400, "Invalid password");
+  if (!isPasswordCorrect) throw new ApiError(401, "Invalid password");
 
   // Generate access and refresh token
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -123,4 +123,30 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) throw new ApiError(404, "User not found");
+
+    // Clear refresh token in the database
+    user.refreshToken = null;
+    await user.save();
+
+    const options = {
+      httpOnly: true,
+      secure: config.NODE_ENV === "production", // Ensure secure flag is only true in production
+    };
+
+    // Clear cookies
+    return res
+      .status(200)
+      .clearCookie("accessToken", options)
+      .clearCookie("refreshToken", options)
+      .json(new ApiResponse(200, "User logged out."));
+  } catch (err) {
+    console.log("Error during logout:", err);
+    throw new ApiError(500, "Something went wrong during logout.");
+  }
+});
+
+export { registerUser, loginUser, logoutUser };

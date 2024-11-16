@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
+      default: "",
     },
     fullName: {
       type: String,
@@ -78,7 +79,6 @@ userSchema.methods.generateAccessToken = async function () {
   return await jwt.sign(
     {
       userId: this._id,
-      email: this.email,
       username: this.username,
       fullName: this.fullName,
     },
@@ -90,9 +90,6 @@ userSchema.methods.generateRefreshToken = async function () {
   return await jwt.sign(
     {
       userId: this._id,
-      email: this.email,
-      username: this.username,
-      fullName: this.fullName,
     },
     config.JWT_REFRESH_TOKEN_SECRET,
     { expiresIn: config.JWT_REFRESH_TOKEN_EXPIRY }
