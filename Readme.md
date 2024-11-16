@@ -65,6 +65,7 @@ This repository contains the backend logic for the **Inscribe** application. It 
 ### API Endpoints
 
 - `POST /api/auth/register`: User registration with validation.
+- `POST /api/auth/login`: Login user with JWT authentication.
 - More endpoints coming soon.
 
 ## Contributing
