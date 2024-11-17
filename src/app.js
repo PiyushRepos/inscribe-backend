@@ -4,6 +4,7 @@ import cors from "cors";
 const app = express();
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
+import postRoutes from "./routes/post.routes.js";
 import ApiError from "./utils/ApiError.js";
 import { config } from "./config.js";
 
@@ -23,6 +24,7 @@ app.use(cookieParser());
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/posts", postRoutes);
 
 // global error handler
 app.use((err, _, res, __) => {

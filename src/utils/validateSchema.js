@@ -21,3 +21,10 @@ export const validateUserSchema = Joi.object({
     ),
   role: Joi.string().default("user"),
 });
+
+export const validatePostSchema = Joi.object({
+  title: Joi.string().min(10).trim().required(),
+  subtitle: Joi.string().trim().min(10).allow(null, ""),
+  content: Joi.string().min(10).required(),
+  tags: Joi.array().max(5).allow("", null),
+});

@@ -12,7 +12,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const result = validateUserSchema.validate(req.body);
   if (result.error) {
     const errors = result.error.details.map((err) =>
-      err.message.replaceAll(`\"`, "")
+      err.message.replace(/\"/g, "")
     );
     throw new ApiError(400, "User validation failed", errors);
   }
