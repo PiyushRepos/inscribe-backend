@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import ApiError from "./utils/ApiError.js";
 import { config } from "./config.js";
+import { verifyJWTToken } from "./middlewares/auth.middlewares.js";
 
 app.use(
   cors({
@@ -24,7 +25,7 @@ app.use(cookieParser());
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/posts", postRoutes);
+app.use("/api/posts", verifyJWTToken, postRoutes);
 
 // global error handler
 app.use((err, _, res, __) => {
@@ -36,6 +37,7 @@ app.use((err, _, res, __) => {
         success: err.success,
         data: err.data,
         errors: err.errors,
+        stack: config.NODE_ENV === "development" ? err.stack : [],
       },
     });
   } else {
@@ -43,6 +45,7 @@ app.use((err, _, res, __) => {
     res.status(err.status || 500).json({
       message: err.message || "Internal Server Error",
       success: false,
+      error: config.NODE_ENV === "development" ? err.stack : [],
     });
   }
 });

@@ -3,8 +3,10 @@ import ApiError from "../utils/ApiError.js";
 import { config } from "../config.js";
 import User from "../models/user.models.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import Post from "../models/post.models.js";
+import mongoose from "mongoose";
 
-export const verifyJWTToken = asyncHandler(async (req, res, next) => {
+export const verifyJWTToken = asyncHandler(async (req, _, next) => {
   // Extract token from cookies or Authorization header
   const token =
     req.cookies?.accessToken ||
@@ -38,4 +40,23 @@ export const verifyJWTToken = asyncHandler(async (req, res, next) => {
       "Unauthorized. Token is either invalid or expired."
     );
   }
+});
+
+export const isAuthor = asyncHandler(async (req, _, next) => {
+  const id = req.params?.id;
+
+  // Check if the provided ID is valid
+  if (!mongoose.Types.ObjectId.isValid(id))
+    throw new ApiError(400, "Invalid post ID.");
+
+  const post = await Post.findById(id);
+  if (!post) throw new ApiError(404, "Post not found.");
+
+  // Compare the post's author ID with the logged-in user's ID
+  if (!post.author.equals(req.user._id))
+    throw new ApiError(403, "You are not authorized to modify this post.");
+
+  req.post = post;
+
+  next();
 });
