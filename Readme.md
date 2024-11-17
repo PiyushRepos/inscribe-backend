@@ -4,7 +4,10 @@ This repository contains the backend logic for the **Inscribe** application. It 
 
 ## Features
 
-- User registration with unique username generation.
+- **User registration** with unique username generation.
+- **User login** and **JWT-based authentication**.
+- **Profile management** for users to update their information.
+- **User logout** with secure cookie handling.
 - Request data validation using **Joi**.
 - Global error handling for consistent API responses.
 - Modular code structure for scalability and maintainability.
@@ -13,10 +16,13 @@ This repository contains the backend logic for the **Inscribe** application. It 
 
 - **Node.js** - Backend runtime
 - **Express.js** - Web framework
-- **MongoDB** - Database
-- **Mongoose** - Object Data Modeling (ODM) library
-- **Joi** - Schema validation
-- **Cloudinary** - Media storage (optional for image uploads)
+- **MongoDB** - Database (using Mongoose for ODM)
+- **Bcrypt** - For hashing passwords securely
+- **JWT (jsonwebtoken)** - For handling JSON Web Tokens for authentication
+- **Cloudinary** - For media storage and image uploads
+- **Multer** - For handling multipart/form-data, especially for image uploads
+- **Joi** - For validating and sanitizing user input data
+- **Cookie-parser** - For parsing cookies in requests
 
 ## Getting Started
 
@@ -29,12 +35,8 @@ This repository contains the backend logic for the **Inscribe** application. It 
 
 1. Clone the repository:
 
-   ```bash
+   ```
    git clone https://github.com/PiyushRepos/inscribe-backend.git
-   ```
-
-   ```
-   cd inscribe-backend
    ```
 
 2. Install dependencies:
@@ -42,36 +44,32 @@ This repository contains the backend logic for the **Inscribe** application. It 
    npm install
    ```
 3. Create a .env file for environment variables:
-
    ```
+   NODE_ENV=development
    PORT=5000
-
    MONGODB_URI=your_mongodb_uri
-
-   CORS_ORIGIN=
-
+   CORS_ORIGIN=your_frontend_url
    CLOUDINARY_CLOUD_NAME=your_cloud_name
-
    CLOUDINARY_API_KEY=your_api_key
-
    CLOUDINARY_API_SECRET=your_api_secret
    ```
-
-4. Start the development server:
+4. npm run dev
    ```
    npm run dev
    ```
 
-### API Endpoints
+## API Endpoints
 
-- `POST /api/auth/register`: User registration with validation.
-- `POST /api/auth/login`: Login user with JWT authentication.
-- More endpoints coming soon.
+**`POST /api/auth/register:`** User registration with validation.
+
+**`POST /api/auth/login:`** Login user with JWT authentication.
+
+**`POST /api/auth/logout:`** Logout user and clear cookies.
+
+**`GET /api/auth/profile:`** Get profile data of the currently logged-in user.
+
+More endpoints **_coming soon_**. 🔜
 
 ## Contributing
 
-Contributions are welcome! Please fork the repository and create a pull request with your changes.
-
-```
-Let me know if you'd like to tweak or add anything! 😊
-```
+Contributions are welcome! Please **fork the repository** and create a pull request with your changes.

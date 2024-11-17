@@ -144,4 +144,21 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logoutUser };
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const currentlyLoggedInUser = await User.findById(req.user._id).select(
+    "-password -refreshToken"
+  );
+  if (!currentlyLoggedInUser) throw new ApiError(404, "User not found");
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Profile data retrieved successfully.",
+        currentlyLoggedInUser
+      )
+    );
+});
+
+export { registerUser, loginUser, logoutUser, getCurrentUser };

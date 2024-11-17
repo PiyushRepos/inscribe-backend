@@ -2,7 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 const app = express();
-import userRouter from "./routes/user.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js";
 import ApiError from "./utils/ApiError.js";
 
 app.use(
@@ -19,7 +20,8 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 // routes
-app.use("/api/auth", userRouter);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // global error handler
 app.use((err, _, res, __) => {
