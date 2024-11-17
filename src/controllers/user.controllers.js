@@ -35,13 +35,8 @@ const registerUser = asyncHandler(async (req, res) => {
     }
   }
 
-  // Generating a unique username
+  // Unique username
   let uniqueUsername = username || firstName;
-  let nanoid = "";
-  for (let i = 1; i <= 4; i++) {
-    nanoid += Math.floor(Math.random() * 10);
-  }
-  uniqueUsername += nanoid;
 
   // Ensuring that username is unique
   while (await User.findOne({ username: uniqueUsername })) {
