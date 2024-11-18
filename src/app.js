@@ -7,7 +7,6 @@ import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
 import ApiError from "./utils/ApiError.js";
 import { config } from "./config.js";
-import { verifyJWTToken } from "./middlewares/auth.middlewares.js";
 
 app.use(
   cors({
@@ -25,7 +24,7 @@ app.use(cookieParser());
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/posts", verifyJWTToken, postRoutes);
+app.use("/api/posts", postRoutes);
 
 // global error handler
 app.use((err, _, res, __) => {

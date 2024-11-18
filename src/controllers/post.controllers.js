@@ -23,6 +23,10 @@ const createPost = asyncHandler(async (req, res) => {
 
     await newPost.save();
 
+    let loggedInUser = req.user;
+    loggedInUser.posts.push(newPost._id);
+    await loggedInUser.save();
+
     res
       .status(201)
       .json(
@@ -62,4 +66,10 @@ const updatePost = asyncHandler(async (req, res) => {
     );
 });
 
-export { createPost, updatePost };
+const deletePost = asyncHandler(async (req, res) => {
+  let deletedPost = await Post.findByIdAndDelete(req.post._id);
+
+  res.status(200).json(new ApiResponse(200, "Post deleted successfully"));
+});
+
+export { createPost, updatePost, deletePost };

@@ -40,7 +40,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Ensuring that username is unique
   while (await User.findOne({ username: uniqueUsername })) {
-    nanoid = "";
+    let nanoid = "";
     for (let i = 1; i <= 4; i++) {
       nanoid += Math.floor(Math.random() * 10);
     }
@@ -145,9 +145,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
-  const currentlyLoggedInUser = await User.findById(req.user._id).select(
-    "-password -refreshToken"
-  );
+  const currentlyLoggedInUser = req.user;
+
   if (!currentlyLoggedInUser) throw new ApiError(404, "User not found");
 
   return res
