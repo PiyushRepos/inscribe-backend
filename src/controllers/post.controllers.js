@@ -3,6 +3,8 @@ import { validatePostSchema } from "../utils/validateSchema.js";
 import Post from "../models/post.models.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
+import { nanoid } from "nanoid";
+import mongoose from "mongoose";
 
 const createPost = asyncHandler(async (req, res) => {
   const { error, value } = validatePostSchema.validate(req.body);
@@ -18,9 +20,9 @@ const createPost = asyncHandler(async (req, res) => {
   try {
     const newPost = new Post({
       ...value,
+      slug: value.title.replace(/\s+/g, "-") + "-" + nanoid(5),
       author: req.user._id,
     });
-
     await newPost.save();
 
     let loggedInUser = req.user;
@@ -67,9 +69,33 @@ const updatePost = asyncHandler(async (req, res) => {
 });
 
 const deletePost = asyncHandler(async (req, res) => {
-  let deletedPost = await Post.findByIdAndDelete(req.post._id);
+  await Post.findByIdAndDelete(req.post._id);
 
   res.status(200).json(new ApiResponse(200, "Post deleted successfully"));
 });
 
-export { createPost, updatePost, deletePost };
+const getAllPosts = asyncHandler(async (req, res) => {
+  if (!req.isAdmin)
+    throw new ApiError(403, "You are not authorized to access this resource.");
+
+  const posts = await Post.find({});
+  res.status(200).json(new ApiResponse(200, "All post retrieved.", { posts }));
+});
+
+const getPost = asyncHandler(async (req, res) => {
+  const id = req.params?.id;
+
+  // Check if the provided ID is valid
+  if (!mongoose.Types.ObjectId.isValid(id))
+    throw new ApiError(400, "Invalid post ID.");
+
+  const post = await Post.findById(id);
+
+  if (!post) throw new ApiError(404, "Post not found.");
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Post fetched successfully", { post }));
+});
+
+export { createPost, updatePost, deletePost, getAllPosts, getPost };

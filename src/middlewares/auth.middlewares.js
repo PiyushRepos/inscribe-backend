@@ -66,15 +66,6 @@ export const isAuthor = asyncHandler(async (req, res, next) => {
 });
 
 export const isAdmin = asyncHandler(async (req, res, next) => {
-  const id = req.params?.id;
-
-  // Check if the provided ID is valid
-  if (!mongoose.Types.ObjectId.isValid(id))
-    throw new ApiError(400, "Invalid post ID.");
-
-  const post = await Post.findById(id);
-  if (!post) throw new ApiError(404, "Post not found.");
-
   // Check, if logged-in user is admin or not
   req.user.role === "admin" ? (req.isAdmin = true) : (req.isAdmin = false);
 

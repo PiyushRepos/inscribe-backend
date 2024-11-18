@@ -7,6 +7,10 @@ const postSchema = mongoose.Schema(
       required: [true, "Post title is required"],
       minlength: [10, "Title should be at least 10 characters long."],
     },
+    slug: {
+      type: String,
+      required: true,
+    },
     subtitle: {
       type: String,
       minlength: [10, "Title should be at least 10 characters long."],
