@@ -75,9 +75,6 @@ const deletePost = asyncHandler(async (req, res) => {
 });
 
 const getAllPosts = asyncHandler(async (req, res) => {
-  if (!req.isAdmin)
-    throw new ApiError(403, "You are not authorized to access this resource.");
-
   const posts = await Post.find({});
   res.status(200).json(new ApiResponse(200, "All post retrieved.", { posts }));
 });
