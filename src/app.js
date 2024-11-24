@@ -11,7 +11,7 @@ import { config } from "./config.js";
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: config.CORS_ORIGIN,
   })
 );
 
