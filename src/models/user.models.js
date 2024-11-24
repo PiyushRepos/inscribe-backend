@@ -42,8 +42,7 @@ const userSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
-      default:
-        "https://res.cloudinary.com/dr9biqyvf/image/upload/v1731653466/default-profile-img_cesild.png",
+      default: null,
     },
     role: {
       type: String,

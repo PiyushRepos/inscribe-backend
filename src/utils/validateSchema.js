@@ -14,11 +14,7 @@ export const validateUserSchema = Joi.object({
   password: Joi.string().min(6).required().trim(),
   username: Joi.string().lowercase().trim().min(3).max(20),
   bio: Joi.string().default(null),
-  profileImage: Joi.string()
-    .allow("", null)
-    .default(
-      "https://res.cloudinary.com/dr9biqyvf/image/upload/v1731653466/default-profile-img_cesild.png"
-    ),
+  profileImage: Joi.allow("", null),
   role: Joi.string().default("user"),
 });
 

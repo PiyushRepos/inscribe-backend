@@ -11,8 +11,7 @@ import { config } from "./config.js";
 app.use(
   cors({
     credentials: true,
-    allowedHeaders: true,
-    origin: config.CORS_ORIGIN,
+    origin: "http://localhost:5173",
   })
 );
 
@@ -41,11 +40,11 @@ app.use((err, _, res, __) => {
     });
   } else {
     // Default error handler for unexpected errors
-    res.status(err.status || 500).json({
-      message: err.message || "Internal Server Error",
-      success: false,
-      error: config.NODE_ENV === "development" ? err.stack : [],
-    });
+    // res.status(err.status || 500).json({
+    //   message: err.message || "Internal Server Error",
+    //   success: false,
+    //   error: config.NODE_ENV === "development" ? err.stack : [],
+    // });
   }
 });
 
