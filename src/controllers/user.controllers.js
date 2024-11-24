@@ -9,7 +9,6 @@ import { config } from "../config.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   // Validate the user input
-  console.log(req.body);
   const result = validateUserSchema.validate(req.body);
   if (result.error) {
     const errors = result.error.details.map((err) =>
