@@ -11,9 +11,10 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    subtitle: {
+    thumbnail: { type: String },
+    summary: {
       type: String,
-      minlength: [10, "Title should be at least 10 characters long."],
+      minlength: [10, "Summary should be at least 10 characters long."],
       default: null,
     },
     content: {

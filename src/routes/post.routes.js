@@ -5,6 +5,7 @@ import {
   getAllPosts,
   updatePost,
   getPost,
+  uploadImage,
 } from "../controllers/post.controllers.js";
 import {
   verifyJWTToken,
@@ -12,8 +13,12 @@ import {
   isAuthor,
 } from "../middlewares/auth.middlewares.js";
 const router = Router({ mergeParams: true });
+import upload from "../middlewares/multer.middlewares.js";
 
-router.route("/").post(verifyJWTToken, createPost).get(getAllPosts);
+router
+  .route("/")
+  .post(verifyJWTToken, upload.single("thumbnail"), createPost)
+  .get(getAllPosts);
 
 router
   .route("/:id")
@@ -21,4 +26,5 @@ router
   .delete(verifyJWTToken, isAdmin, isAuthor, deletePost)
   .get(getPost);
 
+router.route("/upload-image").post(upload.single("image"), uploadImage);
 export default router;

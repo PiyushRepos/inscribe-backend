@@ -3,8 +3,9 @@ import { validatePostSchema } from "../utils/validateSchema.js";
 import Post from "../models/post.models.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import ApiError from "../utils/ApiError.js";
-import { nanoid } from "nanoid";
 import mongoose from "mongoose";
+import uploadOnCloudinary from "../utils/cloudinary.js";
+import { nanoid } from "nanoid";
 
 const createPost = asyncHandler(async (req, res) => {
   const { error, value } = validatePostSchema.validate(req.body);
@@ -13,8 +14,15 @@ const createPost = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Post validation failed", errors);
   }
 
-  if (!req.user || !req.user._id) {
-    throw new ApiError(401, "Unauthorized: User not authenticated");
+  let thumbnailurl = null;
+  if (req.file) {
+    try {
+      const localPath = req.file.path;
+      const result = await uploadOnCloudinary(localPath);
+      thumbnailurl = result.url;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   try {
@@ -22,6 +30,7 @@ const createPost = asyncHandler(async (req, res) => {
       ...value,
       slug: value.title.replace(/\s+/g, "-") + "-" + nanoid(5),
       author: req.user._id,
+      thumbnail: thumbnailurl || "",
     });
     await newPost.save();
 
@@ -35,6 +44,7 @@ const createPost = asyncHandler(async (req, res) => {
         new ApiResponse(201, "Post created successfully", { post: newPost })
       );
   } catch (error) {
+    console.log(error);
     throw new ApiError(500, "Error while creating post", error);
   }
 });
@@ -75,7 +85,8 @@ const deletePost = asyncHandler(async (req, res) => {
 });
 
 const getAllPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({});
+  const posts = await Post.find({}).populate("author");
+  Post;
   res.status(200).json(new ApiResponse(200, "All post retrieved.", { posts }));
 });
 
@@ -86,7 +97,7 @@ const getPost = asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id))
     throw new ApiError(400, "Invalid post ID.");
 
-  const post = await Post.findById(id);
+  const post = await Post.findById(id).populate("author");
 
   if (!post) throw new ApiError(404, "Post not found.");
 
@@ -95,4 +106,22 @@ const getPost = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Post fetched successfully", { post }));
 });
 
-export { createPost, updatePost, deletePost, getAllPosts, getPost };
+const uploadImage = asyncHandler(async (req, res) => {
+  if (req.file) {
+    const result = await uploadOnCloudinary(req.file.path);
+    res.status(200).json({
+      url: result.url,
+    });
+  } else {
+    res.status(400).json({ message: "no image file provided", file: req.file });
+  }
+});
+
+export {
+  createPost,
+  updatePost,
+  deletePost,
+  getAllPosts,
+  getPost,
+  uploadImage,
+};

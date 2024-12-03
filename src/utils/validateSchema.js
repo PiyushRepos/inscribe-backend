@@ -21,7 +21,8 @@ export const validateUserSchema = Joi.object({
 export const validatePostSchema = Joi.object({
   title: Joi.string().min(10).trim().required(),
   slug: Joi.string().trim(),
-  subtitle: Joi.string().trim().min(10).allow(null, ""),
+  summary: Joi.string().trim().min(10).allow(null, ""),
   content: Joi.string().min(10).required(),
   tags: Joi.array().max(5).allow("", null),
+  thumbnail: Joi.string(),
 });
