@@ -22,7 +22,13 @@ router
 
 router
   .route("/:id")
-  .put(verifyJWTToken, isAdmin, isAuthor, updatePost)
+  .put(
+    verifyJWTToken,
+    isAdmin,
+    isAuthor,
+    upload.single("thumbnail"),
+    updatePost
+  )
   .delete(verifyJWTToken, isAdmin, isAuthor, deletePost)
   .get(getPost);
 

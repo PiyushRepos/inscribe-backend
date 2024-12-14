@@ -9,6 +9,7 @@ import { nanoid } from "nanoid";
 
 const createPost = asyncHandler(async (req, res) => {
   const { error, value } = validatePostSchema.validate(req.body);
+  console.log(req.body);
   if (error) {
     const errors = error.details.map((err) => err.message.replace(/\"/g, ""));
     throw new ApiError(400, "Post validation failed", errors);
@@ -50,9 +51,9 @@ const createPost = asyncHandler(async (req, res) => {
 });
 
 const updatePost = asyncHandler(async (req, res) => {
-  const { title, subtitle, content, tags } = req.body;
+  const { title, summary, content, tags, thumbnail } = req.body;
   let post = req.post;
-
+  console.log(req.body);
   if ((tags && !Array.isArray(tags)) || tags?.length > 5) {
     throw new ApiError(
       400,
@@ -63,11 +64,23 @@ const updatePost = asyncHandler(async (req, res) => {
   if (tags && tags.some((tag) => !tag.trim()))
     throw new ApiError(400, "Tags can not be empty.");
 
+  let thumbnailurl = null;
+  if (req.file) {
+    try {
+      const localPath = req.file.path;
+      const result = await uploadOnCloudinary(localPath);
+      thumbnailurl = result.url;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   // Update the post fields, only if provided
   post.title = title || post.title;
-  post.subtitle = subtitle || post.subtitle;
+  post.summary = summary || post.summary;
   post.content = content || post.content;
   post.tags = tags || post.tags;
+  post.thumbnail = thumbnailurl || post.thumbnail;
 
   const updatedPost = await post.save();
 
