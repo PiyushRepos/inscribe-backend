@@ -4,6 +4,9 @@
   "description": "Inscribe is a dynamic platform for sharing your thoughts, stories, and ideas. Write, connect, and leave your mark with every post.",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js"
