@@ -25,7 +25,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
-app.get("/", () => {
+app.get("/", (req, res) => {
   res.json({ message: "Hello World" });
 });
 
@@ -52,4 +52,4 @@ app.use((err, _, res, __) => {
   }
 });
 
-export default app;
+export { app };

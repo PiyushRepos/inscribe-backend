@@ -1,7 +1,7 @@
 import connectDB from "./db/index.js";
 import { config } from "./config.js";
 const PORT = config.PORT;
-import app from "./app.js";
+import { app } from "./app.js";
 
 connectDB()
   .then(() => {
