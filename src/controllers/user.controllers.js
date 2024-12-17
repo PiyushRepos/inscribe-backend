@@ -90,6 +90,7 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
   };
 
   // Get updated user: refresh token updated or added
@@ -123,6 +124,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     const options = {
       httpOnly: true,
       secure: config.NODE_ENV === "production", // Ensure secure flag is only true in production
+      sameSite: config.NODE_ENV === "production" ? "none" : "strict",
     };
 
     // Clear cookies
