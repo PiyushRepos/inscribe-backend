@@ -3,7 +3,7 @@ dotenv.config();
 
 export const config = {
   NODE_ENV: String(process.env.NODE_ENV),
-  PORT: String(process.env.PORT) || 5001,
+  PORT: String(process.env.PORT) || 3000,
   MONGODB_URI: String(process.env.MONGODB_URI),
   CORS_ORIGIN: String(process.env.CORS_ORIGIN),
   CLOUDINARY_CLOUD_NAME: String(process.env.CLOUDINARY_CLOUD_NAME),

@@ -52,4 +52,4 @@ app.use((err, _, res, __) => {
   }
 });
 
-export { app };
+export default app;
