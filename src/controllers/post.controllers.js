@@ -9,7 +9,7 @@ import { nanoid } from "nanoid";
 
 const createPost = asyncHandler(async (req, res) => {
   const { error, value } = validatePostSchema.validate(req.body);
-  console.log(req.body);
+
   if (error) {
     const errors = error.details.map((err) => err.message.replace(/\"/g, ""));
     throw new ApiError(400, "Post validation failed", errors);
@@ -53,7 +53,7 @@ const createPost = asyncHandler(async (req, res) => {
 const updatePost = asyncHandler(async (req, res) => {
   const { title, summary, content, tags, thumbnail } = req.body;
   let post = req.post;
-  console.log(req.body);
+
   if ((tags && !Array.isArray(tags)) || tags?.length > 5) {
     throw new ApiError(
       400,
@@ -99,7 +99,7 @@ const deletePost = asyncHandler(async (req, res) => {
 
 const getAllPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({}).populate("author");
-  Post;
+
   res.status(200).json(new ApiResponse(200, "All post retrieved.", { posts }));
 });
 
