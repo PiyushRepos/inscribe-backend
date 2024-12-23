@@ -130,6 +130,22 @@ const uploadImage = asyncHandler(async (req, res) => {
   }
 });
 
+const getPostsBySearch = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const posts = await Post.find({
+    $or: [
+      { title: { $regex: q, $options: "i" } },
+      { summary: { $regex: q, $options: "i" } },
+      { content: { $regex: q, $options: "i" } },
+      { tags: { $in: q.split(" ") } },
+    ],
+  }).populate("author");
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Posts retrieved successfully", { posts }));
+});
+
 export {
   createPost,
   updatePost,
@@ -137,4 +153,5 @@ export {
   getAllPosts,
   getPost,
   uploadImage,
+  getPostsBySearch,
 };

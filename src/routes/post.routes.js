@@ -6,6 +6,7 @@ import {
   updatePost,
   getPost,
   uploadImage,
+  getPostsBySearch,
 } from "../controllers/post.controllers.js";
 import {
   verifyJWTToken,
@@ -19,6 +20,8 @@ router
   .route("/")
   .post(verifyJWTToken, upload.single("thumbnail"), createPost)
   .get(getAllPosts);
+
+router.get("/search", getPostsBySearch);
 
 router
   .route("/:id")
