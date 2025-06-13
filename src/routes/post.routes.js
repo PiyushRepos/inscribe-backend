@@ -7,6 +7,8 @@ import {
   getPost,
   uploadImage,
   getPostsBySearch,
+  likePost,
+  dislikePost,
 } from "../controllers/post.controllers.js";
 import {
   verifyJWTToken,
@@ -34,6 +36,9 @@ router
   )
   .delete(verifyJWTToken, isAdmin, isAuthor, deletePost)
   .get(getPost);
+
+router.route("/:id/like").patch(verifyJWTToken, isAdmin, likePost);
+router.route("/:id/dislike").patch(verifyJWTToken, isAdmin, dislikePost);
 
 router.route("/upload-image").post(upload.single("image"), uploadImage);
 export default router;

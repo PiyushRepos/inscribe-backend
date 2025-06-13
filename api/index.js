@@ -1,7 +1,7 @@
-import connectDB from "./db/index.js";
-import { config } from "./config.js";
+import connectDB from "../src/db/index.js";
+import { config } from "../src/config.js";
 const PORT = config.PORT;
-import { app } from "./app.js";
+import { app } from "../src/app.js";
 
 connectDB()
   .then(() => {
@@ -12,3 +12,5 @@ connectDB()
   .catch((err) => {
     console.log("MongoDB connection error", err);
   });
+
+export default app;

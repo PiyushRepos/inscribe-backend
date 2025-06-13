@@ -26,6 +26,18 @@ const postSchema = mongoose.Schema(
       type: [String],
       default: null,
     },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    dislikes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

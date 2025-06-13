@@ -146,6 +146,80 @@ const getPostsBySearch = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Posts retrieved successfully", { posts }));
 });
 
+const likePost = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const post = await Post.findById(id);
+
+  if (!post) {
+    return res.status(404).json(new ApiError(404, "Post does not exits"));
+  }
+
+  let isAlreadyLiked = post.likes.some((id) => id == req.user.id);
+
+  if (isAlreadyLiked) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Post already liked by the user."));
+  }
+
+  let isDisliked = post.dislikes.some((dislikeId) => dislikeId == req.user.id);
+
+  if (isDisliked) {
+    await Post.findByIdAndUpdate(
+      id,
+      {
+        $push: { likes: req.user.id },
+        $pull: { dislikes: req.user.id },
+      },
+      { new: true }
+    );
+  } else {
+    post.likes.push(req.user._id);
+    await post.save();
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Post liked successfully"));
+});
+
+const dislikePost = asyncHandler(async (req, res) => {
+  const id = req.params.id;
+
+  const post = await Post.findById(id);
+
+  if (!post) {
+    return res.status(404).json(new ApiError(404, "Post does not exits"));
+  }
+
+  let isAlreadyDisliked = post.dislikes.some((id) => id == req.user.id);
+
+  if (isAlreadyDisliked) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Post already disliked by the user."));
+  }
+
+  let isLiked = post.likes.some((likeId) => likeId == req.user.id);
+
+  if (isLiked) {
+    await Post.findByIdAndUpdate(
+      id,
+      {
+        $push: { dislikes: req.user.id },
+        $pull: { likes: req.user.id },
+      },
+      { new: true }
+    );
+  } else {
+    post.dislikes.push(req.user.id);
+    await post.save();
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Post disliked successfully"));
+});
+
 export {
   createPost,
   updatePost,
@@ -154,4 +228,6 @@ export {
   getPost,
   uploadImage,
   getPostsBySearch,
+  likePost,
+  dislikePost,
 };
